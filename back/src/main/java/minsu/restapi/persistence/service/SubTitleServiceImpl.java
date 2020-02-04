@@ -34,8 +34,9 @@ public class SubTitleServiceImpl implements SubTitleService {
     }
 
     @Override
-    public void save(SubTitle subTitle) {
-        subTitleRepository.save(subTitle);
+    public Long save(SubTitle subTitle) {
+        Long id = subTitleRepository.save(subTitle).getId();
+        return id;
     }
 
     @Override

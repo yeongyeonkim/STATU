@@ -50,12 +50,13 @@ public class CalendarController {
         calendarService.save(calendar);
         //id & todos null
         SubTitle subTitle = new SubTitle(null,"기타","0000-00-00","0000-00-00","gray",calendar,null);
-        subTitleService.save(subTitle);
+        Long id = subTitleService.save(subTitle);
         //user.getCalendars().add(calendar);
         //userService.save(user);
 
         Map<String, String> map = new HashMap<>();
         map.put("result", "success");
+        map.put("id", id.toString());
         return map;
     }
 

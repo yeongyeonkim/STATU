@@ -65,12 +65,13 @@ public class SubTitleController {
 
         //Calendar calendar = calendarService.findById(subTitleDto.getCalendarId());
         SubTitle subTitle = convertToEntity(subTitleDto);
-        subTitleService.save(subTitle);
+        Long id = subTitleService.save(subTitle);
         //calendar.getSubTitles().add(subTitle);
         //calendarService.save(calendar);
 
         Map<String,String> map = new HashMap<>();
         map.put("result","succdss");
+        map.put("id",id.toString());
         return map;
     }
 

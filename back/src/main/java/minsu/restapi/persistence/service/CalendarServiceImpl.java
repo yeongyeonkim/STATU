@@ -21,21 +21,20 @@ public class CalendarServiceImpl implements CalendarService {
     private CalendarRepository calendarRepository;
 
     @Override
-    public void save(Calendar calendar) {
+    public Long save(Calendar calendar) {
 
         if(calendar.isRepresent()==true){
-            System.out.println("---------------------------------------------------------------------들어옴");
             boolean isCalendar =false;
             System.out.println(calendar.getUser().getId());
             isCalendar = calendarRepository.existsByUserId(calendar.getUser().getId());
-            System.out.println("---------------------------------------------------------------------"+isCalendar);
             if(isCalendar == true){
                 calendarRepository.updateRepresent(calendar.getUser().getId());
-                System.out.println("---------------------------------------------------------------------check");
             }
         }
 
-        calendarRepository.save(calendar);
+        Long id = calendarRepository.save(calendar).getId();
+
+        return id;
     }
 
     @Override
