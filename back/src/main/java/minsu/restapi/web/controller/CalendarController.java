@@ -47,10 +47,10 @@ public class CalendarController {
         calendar.setProgress(0);
 
         System.out.println("---------------------------------controller"+calendar.isRepresent());
-        calendarService.save(calendar);
+        Long id = calendarService.save(calendar);
         //id & todos null
         SubTitle subTitle = new SubTitle(null,"기타","0000-00-00","0000-00-00","gray",calendar,null);
-        Long id = subTitleService.save(subTitle);
+        subTitleService.save(subTitle);
         //user.getCalendars().add(calendar);
         //userService.save(user);
 
