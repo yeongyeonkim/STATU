@@ -51,19 +51,17 @@ public class TodoController {
     }
 
     @PostMapping("/todo")
-    public Map<String, Long> insertTodo(@RequestBody TodoDto todoDto) throws Exception {
-        Long id;
+    public Map<String, String> insertTodo(@RequestBody TodoDto todoDto) throws Exception {
         todoDto.setId(null);
         Todo todo = convertToEntity(todoDto);
         //SubTitle subTitle = subTitleService.findById(todoDto.getSubTitleId());
-        id = todoService.save(todo);
+        Long id = todoService.save(todo);
         //subTitle.getTodo().add(todo);
         //subTitleService.save(subTitle);
 
-        Map<String, Long> map = new HashMap<>();
-        todoService.save(todo);
-        map.put("result", 1L);
-        map.put("id",id);
+        Map<String, String> map = new HashMap<>();
+        map.put("result", "success");
+        map.put("id",id.toString());
         return map;
 
     }
@@ -96,14 +94,13 @@ public class TodoController {
     public Map<String, String> updateTodo(@RequestBody TodoDto todoDto) throws Exception {
         Todo todo = convertToEntity(todoDto);
         //SubTitle subTitle = subTitleService.findById(todoDto.getSubTitleId());
-        Long id = todoService.save(todo);
+        todoService.save(todo);
         //subTitle.getTodo().add(todo);
         //subTitleService.save(subTitle);
 
         Map<String, String> map = new HashMap<>();
         todoService.save(todo);
         map.put("result", "success");
-        map.put("id",id.toString());
         return map;
 
     }
