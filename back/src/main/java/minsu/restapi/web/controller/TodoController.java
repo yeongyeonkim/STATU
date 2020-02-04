@@ -81,6 +81,7 @@ public class TodoController {
             TodoDto todoDto = todosDto.getTodos()[i];
             Todo todo = convertToEntity(todoDto);
             //SubTitle subTitle = subTitleService.findById(todoDto.getSubTitleId());
+            todo.setAchieve(0);
             todoService.save(todo);
             //subTitle.getTodo().add(todo);
             //subTitleService.save(subTitle);

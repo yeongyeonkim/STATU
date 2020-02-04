@@ -43,7 +43,7 @@ public class Calendar {
     @Column(name = "view",columnDefinition = "integer default 0")
     private int view;
 
-    @Column(name = "pb",columnDefinition = "boolean default true")
+    @Column(name = "pb",nullable = false ,columnDefinition = "boolean default true")
     private boolean pb;
 
     @Column(name = "progress",columnDefinition = "float default 0")
@@ -52,8 +52,8 @@ public class Calendar {
     @Column(name = "tag")
     private String tag;
 
-    @Column(name = "represen",columnDefinition = "boolean default false")
-    private boolean represen;
+    @Column(name = "represent",nullable = false,columnDefinition = "boolean default false")
+    private boolean represent;
 
     @ManyToMany
     @JoinTable(name="calendar_category1",

@@ -6,7 +6,9 @@ import useDrag from '../../hooks/useDrag'
 import { useSubSchedule } from '../../hooks/useSchedule'
 import { SubSchedule } from '../../store/subSchedule'
 
+
 import './styles/SubScheduleForm.scss'
+import Axios from 'axios'
 
 const SubScheduleForm: FunctionComponent<{}> = () => {
   // subSchedule set
@@ -53,7 +55,14 @@ const SubScheduleForm: FunctionComponent<{}> = () => {
 
   console.log(subSchedules)
 
-  const handleSubmit = (schedule: SubSchedule) => {
+  const handleSubmit = async (schedule: SubSchedule) => {
+    await Axios.post('http://13.124.208.26:8080/subtitle', schedule)
+    try {
+      console.log('success')
+    }
+    catch (e){
+      console.error(e)
+    }
     onPostSubSchedule(schedule)
     onPostSubScheduleOnModal(schedule)
     console.log(schedule)

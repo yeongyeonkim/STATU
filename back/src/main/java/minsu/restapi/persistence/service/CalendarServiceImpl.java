@@ -22,6 +22,19 @@ public class CalendarServiceImpl implements CalendarService {
 
     @Override
     public void save(Calendar calendar) {
+
+        if(calendar.isRepresent()==true){
+            System.out.println("---------------------------------------------------------------------들어옴");
+            boolean isCalendar =false;
+            System.out.println(calendar.getUser().getId());
+            isCalendar = calendarRepository.existsByUserId(calendar.getUser().getId());
+            System.out.println("---------------------------------------------------------------------"+isCalendar);
+            if(isCalendar == true){
+                calendarRepository.updateRepresent(calendar.getUser().getId());
+                System.out.println("---------------------------------------------------------------------check");
+            }
+        }
+
         calendarRepository.save(calendar);
     }
 
@@ -42,8 +55,8 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
-    public Calendar findByUserIdAndRepresen(Long id) {
-        Calendar calendar = calendarRepository.findByUserIdAndRepresen(id, true);
+    public Calendar findByUserIdAndRepresent(Long id) {
+        Calendar calendar = calendarRepository.findByUserIdAndRepresent(id, true);
         return calendar;
     }
 

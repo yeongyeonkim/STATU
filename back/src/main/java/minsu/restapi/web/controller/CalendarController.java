@@ -1,6 +1,7 @@
 package minsu.restapi.web.controller;
 
 import minsu.restapi.persistence.model.*;
+import minsu.restapi.persistence.service.SubTitleService;
 import minsu.restapi.web.dto.CalendarResponseDto;
 import org.modelmapper.ModelMapper;
 import minsu.restapi.persistence.service.CalendarService;
@@ -29,14 +30,27 @@ public class CalendarController {
     private CategoryService categoryService;
 
     @Autowired
+    private SubTitleService subTitleService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @PostMapping("/calendar")
     public Map<String, String> save(@RequestBody CalendarDto calendarDto) throws Exception {
         //User user = userService.findById(calendarDto.getUserId());
+        System.out.println(calendarDto.isRepresent());
+
         calendarDto.setId(null);
         Calendar calendar = convertToEntity(calendarDto);
+        calendar.setRecommend(0);
+        calendar.setView(0);
+        calendar.setProgress(0);
+
+        System.out.println("---------------------------------controller"+calendar.isRepresent());
         calendarService.save(calendar);
+        //id & todos null
+        SubTitle subTitle = new SubTitle(null,"기타","0000-00-00","0000-00-00","gray",calendar,null);
+        subTitleService.save(subTitle);
         //user.getCalendars().add(calendar);
         //userService.save(user);
 
@@ -80,9 +94,9 @@ public class CalendarController {
         return list;
     }
 
-    @GetMapping("/calendar/represen/{userid}")
-    public CalendarResponseDto findByUserIdAndRepresen(@PathVariable Long userid){
-        return convertToResponseDto(calendarService.findByUserIdAndRepresen(userid));
+    @GetMapping("/calendar/represent/{userid}")
+    public CalendarResponseDto findByUserIdAndRepresent(@PathVariable Long userid){
+        return convertToResponseDto(calendarService.findByUserIdAndRepresent(userid));
     }
 
     @DeleteMapping("/calendar/{calendarId}")
@@ -128,7 +142,7 @@ public class CalendarController {
                 calendar.getCategory2s().add(category2);
             }
         }
-
+        System.out.println("after convert"+calendar.isRepresent());
 
         return calendar;
     }

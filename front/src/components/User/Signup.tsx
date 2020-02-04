@@ -73,6 +73,8 @@ const Signup: FunctionComponent = () => {
         console.log('check handler')
     }
 
+    
+
     return (
         <div>
             <h1>회원가입</h1>
@@ -97,7 +99,7 @@ const Signup: FunctionComponent = () => {
                     <input type='password' placeholder='비밀번호 확인' />
                 </div> */}
                 <div>
-                    프로필 사진 첨부
+                파일첨부
                 </div>
                 <div>
                     카테고리 지정<br/> 

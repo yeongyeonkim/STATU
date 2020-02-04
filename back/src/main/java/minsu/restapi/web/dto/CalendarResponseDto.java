@@ -28,7 +28,7 @@ public class CalendarResponseDto {
     private boolean pb;
     private float progress;
     private String[] tag;
-    private boolean represen;
+    private boolean represent;
     private List<Category1> category1s = new ArrayList<>();
     private List<Category2> category2s = new ArrayList<>();
     private List<SubTitle> subTitles = new ArrayList<>();

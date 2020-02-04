@@ -15,7 +15,7 @@ public interface CalendarService {
 
     public List<Calendar> findByUserId(Long id);
 
-    public Calendar findByUserIdAndRepresen(Long id);
+    public Calendar findByUserIdAndRepresent(Long id);
 
     public void deleteById(Long id);
 }

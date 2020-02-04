@@ -83,9 +83,6 @@ public class UserController {
                 System.out.println("token : " + token); // 이게 토큰
                 res.setHeader("jwt-auth-token", token);
                 resultMap.put("jwt",token);
-                System.out.println("get token 해보겠다.");
-                jwtService.get(token);
-                System.out.println("get token 끝났다.");
                 resultMap.put("status", true);
                 resultMap.put("data", reqUser);
                 return response(resultMap, HttpStatus.ACCEPTED, true);

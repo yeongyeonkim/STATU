@@ -26,7 +26,7 @@ public class JwtService {
 		final JwtBuilder builder = Jwts.builder();
 		
 		builder.setHeaderParam("typ", "JWT");
-		builder.setSubject("로그인 토큰")
+		builder.setSubject(user.getEmail())
 				.setExpiration(new Date(System.currentTimeMillis()+1000*60*expireMin))
 				.claim("User", user).claim("second","부가정보");
 		builder.signWith(SignatureAlgorithm.HS256, salt.getBytes());
