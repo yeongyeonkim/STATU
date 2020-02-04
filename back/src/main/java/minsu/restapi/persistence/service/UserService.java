@@ -17,9 +17,13 @@ public interface UserService {
 
     public int save(User User);
 
+    public User findByEmail(String email);
+
     public void deleteByEmail(String email);
 
     public User signin(String email, String password);
 
     public void sendEmail(User user) throws Exception;
+
+    public void deleteImg(String email);
 }

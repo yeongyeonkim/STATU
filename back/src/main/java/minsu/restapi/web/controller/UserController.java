@@ -2,6 +2,7 @@ package minsu.restapi.web.controller;
 
 import io.swagger.annotations.ApiOperation;
 import minsu.restapi.persistence.model.*;
+import minsu.restapi.persistence.service.FileUploadDownloadService;
 import minsu.restapi.persistence.service.JwtService;
 import minsu.restapi.persistence.service.UserService;
 import minsu.restapi.web.dto.LoginDto;
@@ -11,8 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +33,9 @@ public class UserController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    FileUploadDownloadService fileUploadDownloadService;
 
   /*  @ExceptionHandler
     public Map<String, String> errorHandler(Exception e){
@@ -79,15 +86,12 @@ public class UserController {
         try {
             User reqUser = userService.signin(loginDto.getEmail(), loginDto.getPassword());
             if (reqUser != null) {
-                String token = jwtService.create(reqUser);
-                System.out.println("token : " + token); // 이게 토큰
+                String token = jwtService.create(reqUser); // token은 String으로.
                 res.setHeader("jwt-auth-token", token);
-                resultMap.put("jwt",token);
-                System.out.println("get token 해보겠다.");
-                jwtService.get(token);
-                System.out.println("get token 끝났다.");
-                resultMap.put("status", true);
-                resultMap.put("data", reqUser);
+                resultMap.put("token", token);
+//                resultMap.put("status", true);
+//                resultMap.put("data", reqUser);
+                //json 형식으로 하려면 new Gson().toJson(resultmap);
                 return response(resultMap, HttpStatus.ACCEPTED, true);
             } else {
                 resultMap.put("message", "아이디 혹은 비밀번호가 틀렸습니다. 다시 시도해주세요");
@@ -113,7 +117,7 @@ public class UserController {
             int i = userService.save(user);
 
             if (i == 1) {
-                userService.sendEmail(user);
+//                userService.sendEmail(user);
 
                 return response(user, HttpStatus.CREATED, true);
             } else {
@@ -170,42 +174,11 @@ public class UserController {
         return user;
     }
 
-    //    @PutMapping("/update")
-//    @ApiOperation("회원정보 수정하기")
-//    public ResponseEntity<Map<String, Object>> updateUser(@RequestBody User user) {
-//        Map<String, Object> resultMap = new HashMap<>();
-//        try {
-//            int updateUser = service.updateUser(user);
-//            if(updateUser == 1) {
-//                return response(resultMap, HttpStatus.ACCEPTED, true);
-//            } else {
-//                return response("유효하지 않은 접근입니다.", HttpStatus.CONFLICT, false);
-//            }
-//        } catch (Exception e) {
-//            return response(e.getMessage(), HttpStatus.CONFLICT, false);
-//        }
-//    }
-//
-//    @DeleteMapping("/remove")
-//    @ApiOperation("회원정보 탈퇴하기")
-//    public ResponseEntity<Map<String, Object>> deleteUser(@RequestParam String email) {
-//        Map<String, Object> resultMap = new HashMap<>();
-//        try {
-//            int updateUser = service.deleteUser(email);
-//            if(updateUser == 1) {
-//                return response(resultMap, HttpStatus.ACCEPTED, true);
-//            } else {
-//                return response("유효하지 않은 접근입니다.", HttpStatus.CONFLICT, false);
-//            }
-//        } catch (Exception e) {
-//            return response(e.getMessage(), HttpStatus.CONFLICT, false);
-//        }
-//    }
     private ResponseEntity<Map<String, Object>> response(Object data, HttpStatus httpstatus, boolean status) {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("status", status);
         resultMap.put("data", data);
-        System.out.println("data : " + data + ", status  : " + status + ", : httpstatus: " + httpstatus);
+//        System.out.println("data : " + data + ", status  : " + status + ", : httpstatus: " + httpstatus);
         return new ResponseEntity<Map<String, Object>>(resultMap, httpstatus);
     }
 
@@ -221,5 +194,43 @@ public class UserController {
         }
 
     }
+
+    @PostMapping("/user/upload")
+    public User uploadFile(@RequestParam(value = "file", required = false) MultipartFile file,
+                           @RequestParam("email") String email) {
+        User user = userService.findByEmail(email);
+        if(file == null){
+            return user;
+        }
+
+        File root = new File("./uploads");
+        if(root.exists() && user.getImg() != ""){ //파일존재여부
+            String temp = user.getImg();
+            String[] info = temp.split("/downloadFile/");
+            File[] files = root.listFiles();
+            for(File f : files){
+                if(f.getName().equals(info[1])){
+//                    System.out.println(f.getName() + " : 파일성공삭제");
+                    f.delete();
+                }
+            }
+        }
+
+        String fileName = fileUploadDownloadService.storeFile(file);
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(fileName)
+                .toUriString();
+        System.out.println(fileName+ " : " + fileDownloadUri);
+        user.setImg(fileDownloadUri);
+        userService.save(user);
+        return user;
+    }
+    @DeleteMapping("/user/delete")
+    public void deleteFile(@RequestParam("email") String email){
+        userService.deleteImg(email);
+    }
+
 
 }

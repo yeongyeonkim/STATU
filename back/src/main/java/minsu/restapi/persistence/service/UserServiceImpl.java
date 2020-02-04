@@ -36,21 +36,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    public void save(User user){
-//        userRepository.save(user);
-//    }
-
     public User signin(String email, String password) {
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-
         User user = userRepository.findByEmail(email);
         if (user != null) {
             if (passwordEncoder.matches(password, user.getPassword())) {
-                System.out.println(password);
-                System.out.println(user.getPassword());
-
                 return user;
             }
         } else {
@@ -58,6 +50,12 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     @Override
     public void deleteByEmail(String email) {
         userRepository.deleteByEmail(email);
@@ -113,5 +111,8 @@ public class UserServiceImpl implements UserService {
         sendMail.send();
     }
 
-
+    public void deleteImg(String email){
+        User user = userRepository.findByEmail(email);
+        user.setImg("default.png");
+    }
 }
