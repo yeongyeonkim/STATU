@@ -1,6 +1,5 @@
 package minsu.restapi.persistence.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,17 +28,10 @@ public class User {
     @Column(name = "img",nullable = true,columnDefinition = "varchar(225) default 'default.png'")
     private String img;
 
-    @ManyToMany
-    @JoinTable(name="user_category",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private List<Category1> category1s = new ArrayList<>();
-
-    @ManyToMany
-    @JoinTable(name="user_sub_category",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "sub_category_id"))
-    private List<Category2> category2s = new ArrayList<>();
+    @Column(name ="category1")
+    private String category1;
+    @Column(name ="category2")
+    private String category2;
 
     @Column(name = "reg_date")
     private String regDate;
@@ -59,7 +51,6 @@ public class User {
 
 
     @OneToMany(mappedBy="user")
-    @JsonManagedReference
     private List<Calendar> calendars = new ArrayList<>();
 
 }

@@ -4,7 +4,6 @@ import minsu.restapi.persistence.dao.UserRepository;
 import minsu.restapi.persistence.model.User;
 import minsu.restapi.spring.MailUtils;
 import minsu.restapi.spring.TempKey;
-import minsu.restapi.web.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -36,10 +35,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    public void save(User user){
-//        userRepository.save(user);
-//    }
-
     public User signin(String email, String password) {
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -58,6 +53,13 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+
+    public void modify(User user) {
+        userRepository.save(user);
+    }
+
+
     @Override
     public void deleteByEmail(String email) {
         userRepository.deleteByEmail(email);

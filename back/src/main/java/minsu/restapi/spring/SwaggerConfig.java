@@ -19,6 +19,10 @@ public class SwaggerConfig {
     public Docket postsApi() {
         return new Docket(DocumentationType.SWAGGER_2).groupName("public-api")
                 .apiInfo(apiInfo()).select().apis(RequestHandlerSelectors.basePackage("minsu.restapi.web")).paths(PathSelectors.any()).build();
+        /*
+        return new Docket(DocumentationType.SWAGGER_2).groupName("public-api")
+            .apiInfo(apiInfo()).select().paths(PathSelectors.any()).build();
+         */
     }
 
 

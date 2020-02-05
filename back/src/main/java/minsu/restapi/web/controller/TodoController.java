@@ -1,22 +1,14 @@
 package minsu.restapi.web.controller;
 
-import minsu.restapi.persistence.model.Calendar;
-import minsu.restapi.persistence.model.Category1;
-import minsu.restapi.persistence.model.SubTitle;
 import minsu.restapi.persistence.model.Todo;
 import minsu.restapi.persistence.service.SubTitleService;
 import minsu.restapi.persistence.service.TodoService;
-import minsu.restapi.web.dto.CalendarDto;
-import minsu.restapi.web.dto.TodoDto;
-import minsu.restapi.web.dto.TodosDto;
+import minsu.restapi.web.dto.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @CrossOrigin(origins = {"*"}, maxAge = 6000)
 @RestController
@@ -32,18 +24,31 @@ public class TodoController {
     private ModelMapper modelMapper;
 
     @GetMapping("/todo")
-    public List<Todo> findAll(){
-        return todoService.findAll();
+    public List<TodoResponseDto> findAll(){
+
+        List<Todo> todoList= todoService.findAll();
+        List<TodoResponseDto> list = new ArrayList<>();
+
+        for(int i=0; i<todoList.size(); i++){
+            list.add(i,convertToResponseDto(todoList.get(i)));
+        }
+
+        return list;
     }
 
     @GetMapping("/todo/{today}/{calenderId}")
-    public List<Todo> findByDateCal(@PathVariable Date date, @PathVariable Long calenderId){
-        return todoService.findByDateCal(date,calenderId);
+    public List<TodoResponseDto> findByDateCal(@PathVariable Date date, @PathVariable Long calenderId){
+        List<Todo> todoList= todoService.findByDateCal(date,calenderId);
+        List<TodoResponseDto> list = new ArrayList<>();
+
+        for(int i=0; i<todoList.size(); i++){
+            list.add(i,convertToResponseDto(todoList.get(i)));
+        }
+        return list;
     }
 
-    @DeleteMapping("/todo/{todoId}")
+    @DeleteMapping("/todo")
     public Map<String, String> deleteById(@PathVariable Long todoId){
-
         Map<String, String> map = new HashMap<>();
         todoService.deleteById(todoId);
         map.put("result", "success");
@@ -51,13 +56,10 @@ public class TodoController {
     }
 
     @PostMapping("/todo")
-    public Map<String, String> insertTodo(@RequestBody TodoDto todoDto) throws Exception {
+    public Map<String, String> save(@RequestBody TodoDto todoDto) throws Exception {
         todoDto.setId(null);
         Todo todo = convertToEntity(todoDto);
-        //SubTitle subTitle = subTitleService.findById(todoDto.getSubTitleId());
         Long id = todoService.save(todo);
-        //subTitle.getTodo().add(todo);
-        //subTitleService.save(subTitle);
 
         Map<String, String> map = new HashMap<>();
         map.put("result", "success");
@@ -66,47 +68,28 @@ public class TodoController {
 
     }
 
-    @PostMapping("/todos")
-    public Map<String, String> saveTodos(@RequestBody TodosDto todosDto) throws Exception {
-        Map<String, String> map = new HashMap<>();
-        if(todosDto.getTodos()==null){
-            map.put("result", "failed");
-            return map;
-        }
-        int size = todosDto.getTodos().length;
-
-        for(int i=0; i<size; i++) {
-            TodoDto todoDto = todosDto.getTodos()[i];
-            Todo todo = convertToEntity(todoDto);
-            //SubTitle subTitle = subTitleService.findById(todoDto.getSubTitleId());
-            todo.setAchieve(0);
-            todoService.save(todo);
-            //subTitle.getTodo().add(todo);
-            //subTitleService.save(subTitle);
-            todoService.save(todo);
-        }
-        map.put("result", "success");
-        return map;
-
-    }
-
     @PutMapping("/todo")
     public Map<String, String> updateTodo(@RequestBody TodoDto todoDto) throws Exception {
         Todo todo = convertToEntity(todoDto);
-        //SubTitle subTitle = subTitleService.findById(todoDto.getSubTitleId());
         todoService.save(todo);
-        //subTitle.getTodo().add(todo);
-        //subTitleService.save(subTitle);
-
         Map<String, String> map = new HashMap<>();
-        todoService.save(todo);
         map.put("result", "success");
         return map;
 
     }
 
+    //mapper
+
+    private TodoResponseDto convertToResponseDto(Todo todo){
+        TodoResponseDto todoResponseDto = modelMapper.map(todo, TodoResponseDto.class);
+        todoResponseDto.setCalendarId(todo.getCalendarId());
+        return todoResponseDto;
+    }
+
+
     private Todo convertToEntity(TodoDto todoDto) throws Exception{
         Todo todo = modelMapper.map(todoDto, Todo.class);
+        todo.setCalendarId(subTitleService.findById(todoDto.getSubTitleId()).getId());
         return todo;
     }
 

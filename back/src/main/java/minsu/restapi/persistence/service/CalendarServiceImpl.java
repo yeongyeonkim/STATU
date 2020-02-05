@@ -1,14 +1,7 @@
 package minsu.restapi.persistence.service;
 
 import minsu.restapi.persistence.dao.CalendarRepository;
-import minsu.restapi.persistence.dao.Category1Repository;
-import minsu.restapi.persistence.dao.Category2Repository;
-import minsu.restapi.persistence.dao.UserRepository;
 import minsu.restapi.persistence.model.Calendar;
-import minsu.restapi.persistence.model.Category1;
-import minsu.restapi.persistence.model.Category2;
-import minsu.restapi.persistence.model.User;
-import minsu.restapi.web.dto.CalendarDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +18,6 @@ public class CalendarServiceImpl implements CalendarService {
 
         if(calendar.isRepresent()==true){
             boolean isCalendar =false;
-            System.out.println(calendar.getUser().getId());
             isCalendar = calendarRepository.existsByUserId(calendar.getUser().getId());
             if(isCalendar == true){
                 calendarRepository.updateRepresent(calendar.getUser().getId());
@@ -35,6 +27,24 @@ public class CalendarServiceImpl implements CalendarService {
         Long id = calendarRepository.save(calendar).getId();
 
         return id;
+    }
+
+    public void pbToggle(Long id){
+        Calendar calendar = calendarRepository.findById(id).get();
+        calendar.setPb(!calendar.isPb());
+        calendarRepository.save(calendar);
+    }
+
+    public void setRepresent(Long id){
+        Calendar calendar = calendarRepository.findById(id).get();
+        Long UserId = calendar.getUser().getId();
+            boolean isCalendar =false;
+            isCalendar = calendarRepository.existsByUserId(UserId);
+            if(isCalendar == true){
+                calendarRepository.updateRepresent(UserId);
+            }
+            calendar.setRepresent(true);
+            calendarRepository.save(calendar);
     }
 
     @Override

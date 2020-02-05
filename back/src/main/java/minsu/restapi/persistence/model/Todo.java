@@ -1,6 +1,5 @@
 package minsu.restapi.persistence.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +22,10 @@ public class Todo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_title_id")
-    @JsonBackReference
     private SubTitle subTitle;
+
+    @Column(name="calendar_id")
+    private Long calendarId;
 
     @Column(name = "date",nullable = false)
     private String date;

@@ -1,7 +1,5 @@
 package minsu.restapi.persistence.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +23,6 @@ public class Calendar {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id",nullable = false)
-    @JsonBackReference
     private User user;
 
     @Column(name = "title",nullable = false)
@@ -55,20 +52,11 @@ public class Calendar {
     @Column(name = "represent",nullable = false,columnDefinition = "boolean default false")
     private boolean represent;
 
-    @ManyToMany
-    @JoinTable(name="calendar_category1",
-            joinColumns = @JoinColumn(name = "calendar_id"),
-            inverseJoinColumns = @JoinColumn(name = "category1_id"))
-    private List<Category1> category1s = new ArrayList<>();
-
-    @ManyToMany
-    @JoinTable(name="calendar_category2",
-            joinColumns = @JoinColumn(name = "calendar_id"),
-            inverseJoinColumns = @JoinColumn(name = "category2_id"))
-    private List<Category2> category2s = new ArrayList<>();
-
+    @Column(name ="category1")
+    private String category1;
+    @Column(name ="category2")
+    private String category2;
     @OneToMany(mappedBy="calendar")
-    @JsonManagedReference
     private List<SubTitle> subTitles = new ArrayList<>();
 
 }

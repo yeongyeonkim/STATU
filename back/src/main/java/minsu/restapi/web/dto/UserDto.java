@@ -19,6 +19,6 @@ public class UserDto {
     private String password;
     private String name;
     private String img;
-    private Long[] category1;
-    private Long[] category2;
+    private String[] category1;
+    private String[] category2;
 }

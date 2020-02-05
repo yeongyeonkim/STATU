@@ -1,7 +1,5 @@
 package minsu.restapi.persistence.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,11 +36,9 @@ public class SubTitle {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "calendar_id")
-    @JsonBackReference
     private Calendar calendar;
 
     @OneToMany(mappedBy="subTitle")
-    @JsonManagedReference
     private List<Todo> todo = new ArrayList<>();
 
 }

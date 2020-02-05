@@ -3,7 +3,6 @@ package minsu.restapi.persistence.service;
 import minsu.restapi.persistence.model.User;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
 
@@ -16,6 +15,8 @@ public interface UserService {
     public User findById(Long id);
 
     public int save(User User);
+
+    public void modify(User User);
 
     public void deleteByEmail(String email);
 

@@ -1,21 +1,15 @@
 package minsu.restapi.web.controller;
 
-import minsu.restapi.persistence.model.Calendar;
-import minsu.restapi.persistence.model.Category1;
 import minsu.restapi.persistence.model.SubTitle;
-import minsu.restapi.persistence.model.Todo;
 import minsu.restapi.persistence.service.CalendarService;
 import minsu.restapi.persistence.service.SubTitleService;
-import minsu.restapi.web.dto.CalendarDto;
 import minsu.restapi.web.dto.SubTitleDto;
+import minsu.restapi.web.dto.SubTitleResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @CrossOrigin(origins = {"*"}, maxAge = 6000)
 @RestController
@@ -31,29 +25,39 @@ public class SubTitleController {
     private ModelMapper modelMapper;
 
     @GetMapping("/subtitle")
-    public List<SubTitle> title(){
-        return subTitleService.findAll();
+    public List<SubTitleResponseDto> findAll(){
+        List<SubTitle> subTitleList =subTitleService.findAll();
+        List<SubTitleResponseDto> list = new ArrayList<>();
+
+        for(int i=0; i<subTitleList.size(); i++){
+            list.add(i, convertToResponseDto(subTitleList.get(i)));
+        }
+        return list;
     }
 
     @GetMapping("/subtitle/bysubtitle/{subTitleId}")
-    public SubTitle titleById(@PathVariable Long subTitleId){
-        return  subTitleService.findById(subTitleId);
+    public SubTitleResponseDto titleById(@PathVariable Long subTitleId){
+        SubTitleResponseDto subTitleResponseDto = convertToResponseDto(subTitleService.findById(subTitleId));
+        return  subTitleResponseDto;
     }
 
     @GetMapping("/subtitle/bycalendarid/{calendarId}")
-    public List<SubTitle> titleByCalendarId(@PathVariable Long calendarId){
-        return  subTitleService.findByCalendarId(calendarId);
+    public List<SubTitleResponseDto> titleByCalendarId(@PathVariable Long calendarId){
+        List<SubTitle> subTitleList = subTitleService.findByCalendarId(calendarId);
+        List<SubTitleResponseDto> list = new ArrayList<>();
+
+        for(int i=0; i<subTitleList.size(); i++){
+            list.add(i, convertToResponseDto(subTitleList.get(i)));
+        }
+        return list;
     }
 
     @PostMapping("/subtitle")
     public Map<String,String> save(@RequestBody SubTitleDto subTitleDto) throws Exception {
 
-        //Calendar calendar = calendarService.findById(subTitleDto.getCalendarId());
         subTitleDto.setId(null);
         SubTitle subTitle = convertToEntity(subTitleDto);
         Long id = subTitleService.save(subTitle);
-        //calendar.getSubTitles().add(subTitle);
-        //calendarService.save(calendar);
 
         Map<String,String> map = new HashMap<>();
         map.put("result","success");
@@ -64,19 +68,15 @@ public class SubTitleController {
     @PutMapping("/subtitle")
     public Map<String,String> modify(@RequestBody SubTitleDto subTitleDto) throws Exception {
 
-        //Calendar calendar = calendarService.findById(subTitleDto.getCalendarId());
         SubTitle subTitle = convertToEntity(subTitleDto);
         subTitleService.save(subTitle);
-        //calendar.getSubTitles().add(subTitle);
-        //calendarService.save(calendar);
 
         Map<String,String> map = new HashMap<>();
         map.put("result","succdss");
-
         return map;
     }
 
-    @DeleteMapping("/subtitle/{subTitleId}")
+    @DeleteMapping("/subtitle")
     public Map<String,String> deleteById(@PathVariable Long subTitleId){
         subTitleService.deleteById(subTitleId);
 
@@ -85,6 +85,13 @@ public class SubTitleController {
         return map;
     }
 
+
+    //mapper
+
+    private SubTitleResponseDto convertToResponseDto(SubTitle subTitle){
+        SubTitleResponseDto subTitleResponseDto = modelMapper.map(subTitle, SubTitleResponseDto.class);
+        return subTitleResponseDto;
+    }
 
 
     private SubTitle convertToEntity(SubTitleDto subTitleDto) throws Exception{

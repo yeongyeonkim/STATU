@@ -24,12 +24,6 @@ public class CalendarController {
     CalendarService calendarService;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
     private SubTitleService subTitleService;
 
     @Autowired
@@ -37,7 +31,6 @@ public class CalendarController {
 
     @PostMapping("/calendar")
     public Map<String, String> save(@RequestBody CalendarDto calendarDto) throws Exception {
-        //User user = userService.findById(calendarDto.getUserId());
         System.out.println(calendarDto.isRepresent());
 
         calendarDto.setId(null);
@@ -46,13 +39,9 @@ public class CalendarController {
         calendar.setView(0);
         calendar.setProgress(0);
 
-        System.out.println("---------------------------------controller"+calendar.isRepresent());
         Long id = calendarService.save(calendar);
-        //id & todos null
         SubTitle subTitle = new SubTitle(null,"기타","0000-00-00","0000-00-00","gray",calendar,null);
         subTitleService.save(subTitle);
-        //user.getCalendars().add(calendar);
-        //userService.save(user);
 
         Map<String, String> map = new HashMap<>();
         map.put("result", "success");
@@ -63,16 +52,31 @@ public class CalendarController {
     @PutMapping("/calendar")
     public Map<String, String> modify(@RequestBody CalendarDto calendarDto) throws Exception {
 
-        //User user = userService.findById(calendarDto.getUserId());
         Calendar calendar = convertToEntity(calendarDto);
         calendarService.save(calendar);
-        //user.getCalendars().add(calendar);
-        //userService.save(user);
         Map<String, String> map = new HashMap<>();
 
         map.put("result", "success");
         return map;
     }
+
+    @PutMapping("/pbtoggle/{calendarid}")
+    public Map<String, String> pbToggle(@PathVariable Long calendarid) throws Exception {
+        calendarService.pbToggle(calendarid);
+        Map<String, String> map = new HashMap<>();
+        map.put("result", "success");
+        return map;
+    }
+
+
+    @PutMapping("/representset/{calendarid}")
+    public Map<String, String> setRepresent(@PathVariable Long calendarid) throws Exception {
+        calendarService.setRepresent(calendarid);
+        Map<String, String> map = new HashMap<>();
+        map.put("result", "success");
+        return map;
+    }
+
 
     @GetMapping("/calendar")
     public List<CalendarResponseDto> findAll(){
@@ -109,11 +113,19 @@ public class CalendarController {
     }
 
 
+    //mapper
+
     private CalendarResponseDto convertToResponseDto(Calendar calendar){
         CalendarResponseDto calendarResponseDto = modelMapper.map(calendar, CalendarResponseDto.class);
         //set
         String temp[] = calendar.getTag().split(",");
-        calendarResponseDto.setTag(temp);
+        calendarResponseDto.setTags(temp);
+
+        temp = calendar.getCategory1().split(",");
+        calendarResponseDto.setCategory1(temp);
+
+        temp = calendar.getCategory2().split(",");
+        calendarResponseDto.setCategory2(temp);
         return calendarResponseDto;
     }
 
@@ -123,28 +135,14 @@ public class CalendarController {
 
         //set
         String temp="";
-        for(int i=0; i<calendarDto.getTags().length; i++){
-            temp+=calendarDto.getTags()[i]+",";
-        }
+        for(int i=0; i<calendarDto.getTags().length; i++){temp+=calendarDto.getTags()[i]+",";}
         calendar.setTag(temp);
-
-        if(calendarDto.getCategory1()!=null){
-            for (int i = 0; i < calendarDto.getCategory1().length; i++) {
-                Category1 category1 = new Category1();
-                category1.setId(calendarDto.getCategory1()[i]);
-                calendar.getCategory1s().add(category1);
-            }
-        }
-
-        if(calendarDto.getCategory2()!=null){
-            for (int i = 0; i < calendarDto.getCategory2().length; i++) {
-                Category2 category2 = new Category2();
-                category2.setId(calendarDto.getCategory2()[i]);
-                calendar.getCategory2s().add(category2);
-            }
-        }
-        System.out.println("after convert"+calendar.isRepresent());
-
+       temp="";
+        for(int i=0; i<calendarDto.getCategory1().length; i++){temp+=calendarDto.getCategory1()[i]+",";}
+        calendar.setCategory1(temp);
+        temp="";
+        for(int i=0; i<calendarDto.getCategory2().length; i++){temp+=calendarDto.getCategory2()[i]+",";}
+        calendar.setCategory2(temp);
         return calendar;
     }
 

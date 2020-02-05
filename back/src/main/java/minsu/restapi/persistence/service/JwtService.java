@@ -28,7 +28,7 @@ public class JwtService {
 		builder.setHeaderParam("typ", "JWT");
 		builder.setSubject(user.getEmail())
 				.setExpiration(new Date(System.currentTimeMillis()+1000*60*expireMin))
-				.claim("User", user).claim("second","부가정보");
+				.claim("user", user);
 		builder.signWith(SignatureAlgorithm.HS256, salt.getBytes());
 		
 		final String jwt = builder.compact();

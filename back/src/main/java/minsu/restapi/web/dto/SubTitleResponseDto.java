@@ -1,26 +1,19 @@
 package minsu.restapi.web.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
-
+import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CalendarDto {
+public class SubTitleResponseDto {
     private Long id;
-    private Long userId;
-    private String title;
+    private Long calendarId;
+    private String subTitle;
     private String startDate;
     private String endDate;
-    private boolean pb;
-    private String[] tags;
-    private boolean represent;
-    private String[] category1;
-    private String[] category2;
-
+    private String color;
 }
