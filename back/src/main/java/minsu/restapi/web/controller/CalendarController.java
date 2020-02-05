@@ -30,7 +30,7 @@ public class CalendarController {
     private ModelMapper modelMapper;
 
     @PostMapping("/calendar")
-    public Map<String, String> save(@RequestBody CalendarDto calendarDto) throws Exception {
+    public Map<String, Object> save(@RequestBody CalendarDto calendarDto) throws Exception {
         System.out.println(calendarDto.isRepresent());
 
         calendarDto.setId(null);
@@ -43,9 +43,9 @@ public class CalendarController {
         SubTitle subTitle = new SubTitle(null,"기타","0000-00-00","0000-00-00","gray",calendar,null);
         subTitleService.save(subTitle);
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("result", "success");
-        map.put("id", id.toString());
+        map.put("id", id);
         return map;
     }
 

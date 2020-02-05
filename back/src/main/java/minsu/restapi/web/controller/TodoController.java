@@ -56,14 +56,14 @@ public class TodoController {
     }
 
     @PostMapping("/todo")
-    public Map<String, String> save(@RequestBody TodoDto todoDto) throws Exception {
+    public Map<String, Object> save(@RequestBody TodoDto todoDto) throws Exception {
         todoDto.setId(null);
         Todo todo = convertToEntity(todoDto);
         Long id = todoService.save(todo);
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("result", "success");
-        map.put("id",id.toString());
+        map.put("id",id);
         return map;
 
     }
@@ -82,14 +82,12 @@ public class TodoController {
 
     private TodoResponseDto convertToResponseDto(Todo todo){
         TodoResponseDto todoResponseDto = modelMapper.map(todo, TodoResponseDto.class);
-        todoResponseDto.setCalendarId(todo.getCalendarId());
         return todoResponseDto;
     }
 
 
     private Todo convertToEntity(TodoDto todoDto) throws Exception{
         Todo todo = modelMapper.map(todoDto, Todo.class);
-        todo.setCalendarId(subTitleService.findById(todoDto.getSubTitleId()).getId());
         return todo;
     }
 

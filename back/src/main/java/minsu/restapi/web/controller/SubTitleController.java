@@ -53,15 +53,15 @@ public class SubTitleController {
     }
 
     @PostMapping("/subtitle")
-    public Map<String,String> save(@RequestBody SubTitleDto subTitleDto) throws Exception {
+    public Map<String,Object> save(@RequestBody SubTitleDto subTitleDto) throws Exception {
 
         subTitleDto.setId(null);
         SubTitle subTitle = convertToEntity(subTitleDto);
         Long id = subTitleService.save(subTitle);
 
-        Map<String,String> map = new HashMap<>();
+        Map<String,Object> map = new HashMap<>();
         map.put("result","success");
-        map.put("id",id.toString());
+        map.put("id",id);
         return map;
     }
 

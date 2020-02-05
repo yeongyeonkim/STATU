@@ -12,6 +12,7 @@ import lombok.Setter;
 public class TodoDto {
     private Long id;
     private Long subTitleId;
+    private Long calendarId;
     private String date;
     private String todo;
     private int goal;
