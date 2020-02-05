@@ -40,7 +40,7 @@ public class CalendarController {
         calendar.setProgress(0);
 
         Long id = calendarService.save(calendar);
-        SubTitle subTitle = new SubTitle(null,"기타","0000-00-00","0000-00-00","gray",calendar,null);
+        SubTitle subTitle = new SubTitle(null,"기타","9999-99-99","9999-99-99","gray",calendar,null);
         subTitleService.save(subTitle);
 
         Map<String, Object> map = new HashMap<>();
