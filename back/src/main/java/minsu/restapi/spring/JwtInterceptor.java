@@ -31,6 +31,7 @@ public class JwtInterceptor implements HandlerInterceptor{
 					return jwtService.checkValid(token);
 //					return true;
 				} else {
+//					return false;
 					throw new RuntimeException("인증토큰이 없습니다. ");
 				}
 			}

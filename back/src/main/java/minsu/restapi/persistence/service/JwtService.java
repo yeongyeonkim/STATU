@@ -5,6 +5,7 @@ import minsu.restapi.persistence.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.DatatypeConverter;
 import java.util.Date;
 import java.util.Map;
 
@@ -24,17 +25,16 @@ public class JwtService {
 	public String create(final User user) {
 		//log.trace("time: {}", expireMin);
 		final JwtBuilder builder = Jwts.builder();
-		
+
 		builder.setHeaderParam("typ", "JWT");
 		builder.setSubject(user.getEmail())
 				.setExpiration(new Date(System.currentTimeMillis()+1000*60*expireMin))
-				.claim("User", user);
+				.claim("user", user);
 //				.claim("second","부가정보");
 		//claims에 get하고 싶은 key의 이름과 값을 넣어준다.
 		//claims.getHeader() => email
 		//claims.getBody().get("key name") + ""으로 출력
 		builder.signWith(SignatureAlgorithm.HS256, salt.getBytes());
-
 		/*
 		Header, payload, verify signature가 필요한데,
 		header와 payload는 단순 인코딩 되어 누구라도 디코딩 가능하지만
@@ -58,6 +58,7 @@ public class JwtService {
 	public boolean checkValid(final String jwt) throws Exception {
 		try{
 			Jwts.parser().setSigningKey(salt.getBytes()).parseClaimsJws(jwt);
+//			Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(salt)).parseClaimsJws(jwt).getBody();
 			return true;
 		} catch(ExpiredJwtException exception){
 			return false;
@@ -91,6 +92,7 @@ public class JwtService {
 			claims = Jwts.parser().setSigningKey(salt.getBytes()).parseClaimsJws(jwt);
 			Date exp = claims.getBody().getExpiration();
 			Date now = new Date();
+
 			if(exp.after(now)) return true;
 			return false;
 		} catch (Exception e){

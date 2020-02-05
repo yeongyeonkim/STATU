@@ -26,4 +26,6 @@ public interface UserService {
     public void sendEmail(User user) throws Exception;
 
     public void deleteImg(String email);
+
+    public String fr(String email);
 }

@@ -1,20 +1,25 @@
 package minsu.restapi.web.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.ApiOperation;
 import minsu.restapi.persistence.model.*;
 import minsu.restapi.persistence.service.FileUploadDownloadService;
 import minsu.restapi.persistence.service.JwtService;
 import minsu.restapi.persistence.service.UserService;
+import minsu.restapi.spring.LoginUser;
 import minsu.restapi.web.dto.LoginDto;
+import minsu.restapi.web.dto.SessionUser;
 import minsu.restapi.web.dto.UserDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.HashMap;
@@ -77,6 +82,37 @@ public class UserController {
         return map;
     }
 
+    //소셜로그인
+//    @GetMapping("/user/social")
+//    @ApiOperation("소셜로그인 인증 후 리다이렉트되는 부분")
+//    public Map<String, Object> social(@LoginUser SessionUser user){
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("user", user);
+//        return map;
+//    }
+    @GetMapping("/user/social")
+    @ApiOperation("소셜로그인 인증 후 리다이렉트되는 부분")
+    public ResponseEntity<Map<String, Object>> social(@LoginUser SessionUser user){
+        Map<String, Object> map = new HashMap<>();
+        try{
+            if(user != null){
+                map.put("user", user);
+                return response(map, HttpStatus.ACCEPTED, true);
+            } else{
+                map.put("message", "아이디 혹은 비밀번호가 틀렸습니다. 다시 시도해주세요");
+                return response(map, HttpStatus.ACCEPTED, false);
+            }
+        } catch (Exception e){
+            return response(e.getMessage(), HttpStatus.CONFLICT, false);
+        }
+    }
+
+//    @GetMapping("/user/loginfailure")
+//    @ApiOperation("로그인 실패시")
+//    public String loginfailure(@LoginUser SessionUser user){
+//
+//    }
+
     //로그인
     @PostMapping("/user/signin")
     @ApiOperation("로그인하기")
@@ -88,14 +124,12 @@ public class UserController {
             if (reqUser != null) {
                 String token = jwtService.create(reqUser); // token은 String으로.
                 res.setHeader("jwt-auth-token", token);
+//                if(jwtService.getExpToken(res.getHeader("jwt_auth-token"))); // true면 만료?
                 resultMap.put("token", token);
-//                resultMap.put("status", true);
-//                resultMap.put("data", reqUser);
-                //json 형식으로 하려면 new Gson().toJson(resultmap);
                 return response(resultMap, HttpStatus.ACCEPTED, true);
             } else {
                 resultMap.put("message", "아이디 혹은 비밀번호가 틀렸습니다. 다시 시도해주세요");
-                return response(resultMap, HttpStatus.ACCEPTED, true);
+                return response(resultMap, HttpStatus.ACCEPTED, false);
             }
         } catch (Exception e) {
             return response(e.getMessage(), HttpStatus.CONFLICT, false);
@@ -111,14 +145,13 @@ public class UserController {
             System.out.println(user);
             user.setUserTypeCode("user");
             user.setStatusCode("not_checked");
+            user.setRole(Role.GUEST);
             if(user.getImg()==null){
                 user.setImg("default.png");
             }
             int i = userService.save(user);
-
             if (i == 1) {
 //                userService.sendEmail(user);
-
                 return response(user, HttpStatus.CREATED, true);
             } else {
                 return response("유효하지 않은 접근입니다.", HttpStatus.CONFLICT, false);
@@ -129,25 +162,28 @@ public class UserController {
     }
 
 
-    @PutMapping("/user")
-    public Map<String, String> modify(@RequestBody UserDto userDto) throws Exception {
+    @PutMapping("/user/auth")
+    public Map<String, String> modify(@RequestBody UserDto userDto, HttpServletRequest req) throws Exception {
+//        String jwt = req.getParamter("jwt");
+//        String token = req.getHeader("token");
+//        System.out.println(token);
+//        System.out.println(req.getParameter("jwt-auth-token"));
+//        System.out.println(req.getParameter("token"));
+//        if(jwtService.checkValid(token)) 면 세이브 하는식으로?
         User user = convertToEntity(userDto);
         userService.save(user);
         Map<String, String> map = new HashMap<>();
-
         map.put("result", "success");
         return map;
-
     }
 
 
-    @DeleteMapping("/user/{email}")
-    public Map<String, String> deleteUser(@PathVariable String email) {
+    @DeleteMapping("/user/auth/{email}")
+    public Map<String, String> deleteUser(@PathVariable String email, HttpServletRequest req) {
         Map<String, String> map = new HashMap<>();
         userService.deleteByEmail(email);
         map.put("result", "success");
         return map;
-
     }
 
     private User convertToEntity(UserDto userDto) throws Exception {
@@ -176,9 +212,9 @@ public class UserController {
 
     private ResponseEntity<Map<String, Object>> response(Object data, HttpStatus httpstatus, boolean status) {
         Map<String, Object> resultMap = new HashMap<>();
+        System.out.println("status : " + status);
         resultMap.put("status", status);
         resultMap.put("data", data);
-//        System.out.println("data : " + data + ", status  : " + status + ", : httpstatus: " + httpstatus);
         return new ResponseEntity<Map<String, Object>>(resultMap, httpstatus);
     }
 
@@ -195,7 +231,7 @@ public class UserController {
 
     }
 
-    @PostMapping("/user/upload")
+    @PostMapping("/user/auth/upload")
     public User uploadFile(@RequestParam(value = "file", required = false) MultipartFile file,
                            @RequestParam("email") String email) {
         User user = userService.findByEmail(email);
@@ -227,7 +263,7 @@ public class UserController {
         userService.save(user);
         return user;
     }
-    @DeleteMapping("/user/delete")
+    @DeleteMapping("/user/auth/deletefile")
     public void deleteFile(@RequestParam("email") String email){
         userService.deleteImg(email);
     }

@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.fe(email);
         if (user != null) {
             if (passwordEncoder.matches(password, user.getPassword())) {
                 return user;
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.fe(email);
     }
 
     @Override
@@ -62,23 +62,23 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public boolean checkEmail(String email){
+    public boolean checkEmail(String email) {
         boolean result = userRepository.existsByEmail(email);
         return result;
     }
 
-    public boolean checkName(String name){
+    public boolean checkName(String name) {
         boolean result = userRepository.existsByName(name);
         return result;
 
     }
 
-    public List<User> findAll(){
-        List<User> users =userRepository.findAll();
+    public List<User> findAll() {
+        List<User> users = userRepository.findAll();
         return users;
     }
 
-    public User findById(Long id){
+    public User findById(Long id) {
         User user = userRepository.findById(id).get();
         return user;
     }
@@ -111,8 +111,12 @@ public class UserServiceImpl implements UserService {
         sendMail.send();
     }
 
-    public void deleteImg(String email){
-        User user = userRepository.findByEmail(email);
+    public void deleteImg(String email) {
+        User user = userRepository.fe(email);
         user.setImg("default.png");
+    }
+
+    public String fr(String email) {
+        return userRepository.fr(email);
     }
 }

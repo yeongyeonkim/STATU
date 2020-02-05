@@ -26,8 +26,9 @@ public class RestapiApplication implements WebMvcConfigurer {
     private JwtInterceptor jwtInterceptor;
 
     public void addInterceptors(InterceptorRegistry registry) {
+
         registry.addInterceptor(jwtInterceptor)
-                .excludePathPatterns(Arrays.asList("/**")).addPathPatterns("/user/delete");
+                .excludePathPatterns(Arrays.asList("/**")).addPathPatterns("/user/auth/**");
 //        .excludePathPatterns("/user", "/user/signin", "/user/signup");
         //  이런식으로 토큰이 필요 없는 부분 제외.a
     }
