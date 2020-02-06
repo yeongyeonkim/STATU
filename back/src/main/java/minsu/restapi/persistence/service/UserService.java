@@ -14,6 +14,8 @@ public interface UserService {
 
     public User findById(Long id);
 
+    public User findByEmail(String email);
+
     public int save(User User);
 
     public void modify(User User);
@@ -23,4 +25,6 @@ public interface UserService {
     public User signin(String email, String password);
 
     public void sendEmail(User user) throws Exception;
+
+    public void deleteImg(String email);
 }

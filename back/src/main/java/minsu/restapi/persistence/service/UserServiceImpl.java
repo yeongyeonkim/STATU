@@ -1,5 +1,6 @@
 package minsu.restapi.persistence.service;
 
+import lombok.Builder;
 import minsu.restapi.persistence.dao.UserRepository;
 import minsu.restapi.persistence.model.User;
 import minsu.restapi.spring.MailUtils;
@@ -40,7 +41,7 @@ public class UserServiceImpl implements UserService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.fe(email);
         if (user != null) {
             if (passwordEncoder.matches(password, user.getPassword())) {
                 System.out.println(password);
@@ -53,6 +54,9 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    @Override
+    public User findByEmail(String email){return userRepository.fe(email);}
 
 
     public void modify(User user) {
@@ -115,5 +119,10 @@ public class UserServiceImpl implements UserService {
         sendMail.send();
     }
 
+    @Override
+    public void deleteImg(String email){
+        User user = userRepository.fe(email);
+        user.setImg("default.png");
+    }
 
 }

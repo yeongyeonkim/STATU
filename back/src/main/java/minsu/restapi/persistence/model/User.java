@@ -43,6 +43,9 @@ public class User {
     @Column(name="auth_key")
     private String authKey;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     //사용자 상태
     //@Column(columnDefinition="USE")
@@ -53,4 +56,17 @@ public class User {
     @OneToMany(mappedBy="user",fetch = FetchType.LAZY)
     private List<Calendar> calendars = new ArrayList<>();
 
+    @Builder
+    public User(String name, String email, Role role) {
+        this.name = name;
+        this.email = email;
+        this.role = role;
+    }
+    public User update(String name) {
+        this.name = name;
+        return this;
+    }
+    public String getRoleKey() {
+        return this.role.getKey();
+    }
 }

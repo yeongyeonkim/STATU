@@ -2,6 +2,7 @@ package minsu.restapi.web.controller;
 
 import io.swagger.annotations.ApiOperation;
 import minsu.restapi.persistence.model.*;
+import minsu.restapi.persistence.service.FileUploadDownloadService;
 import minsu.restapi.persistence.service.JwtService;
 import minsu.restapi.persistence.service.UserService;
 import minsu.restapi.web.dto.*;
@@ -10,8 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -27,6 +32,9 @@ public class UserController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    FileUploadDownloadService fileUploadDownloadService;
 
   /*  @ExceptionHandler
     public Map<String, String> errorHandler(Exception e){
@@ -45,9 +53,9 @@ public class UserController {
         userDto.setId(null);
         User user = convertToEntity(userDto);
         try {
-            System.out.println(user);
             user.setUserTypeCode("user");
             user.setStatusCode("not_checked");
+            user.setRole(Role.GUEST);
             if(user.getImg()==null){
                 user.setImg("default.png");
             }
@@ -76,11 +84,8 @@ public class UserController {
             User reqUser = userService.signin(loginDto.getEmail(), loginDto.getPassword());
             if (reqUser != null) {
                 String token = jwtService.create(reqUser);
-                System.out.println("token : " + token); // 이게 토큰
-                res.setHeader("jwt-auth-token", token);
-                resultMap.put("jwt",token);
-                resultMap.put("status", true);
-                resultMap.put("data", reqUser);
+                res.setHeader("token", token);
+                resultMap.put("token",token);
                 return response(resultMap, HttpStatus.ACCEPTED, true);
             } else {
                 resultMap.put("message", "아이디 혹은 비밀번호가 틀렸습니다. 다시 시도해주세요");
@@ -139,7 +144,7 @@ public class UserController {
 
 
 
-    @PutMapping("/user")
+    @PutMapping("/user/auth/modify")
     public Map<String, String> modify(@RequestBody UserDto userDto) throws Exception {
         User user = convertToEntity(userDto);
         userService.modify(user);
@@ -150,8 +155,9 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/user/{email}")
-    public Map<String, String> deleteUser(@PathVariable String email) {
+    @DeleteMapping("/user/auth")
+    public Map<String, String> deleteUser(HttpServletRequest req) {
+        String email = jwtService.getUserEmail(req.getHeader("token"));
         Map<String, String> map = new HashMap<>();
         userService.deleteByEmail(email);
         map.put("result", "success");
@@ -159,13 +165,7 @@ public class UserController {
 
     }
 
-    private ResponseEntity<Map<String, Object>> response(Object data, HttpStatus httpstatus, boolean status) {
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("status", status);
-        resultMap.put("data", data);
-        System.out.println("data : " + data + ", status  : " + status + ", : httpstatus: " + httpstatus);
-        return new ResponseEntity<Map<String, Object>>(resultMap, httpstatus);
-    }
+
 
     @GetMapping(value="/joinConfirm/{id}/{auth}")
     public String  emailConfirm(@PathVariable Long id,@PathVariable String auth,HttpServletResponse response) throws Exception {
@@ -215,5 +215,48 @@ public class UserController {
         user.setCategory2(temp);
 
         return user;
+    }
+
+    @PostMapping("/user/auth/upload")
+    public User uploadFile(@RequestParam(value = "file", required = false) MultipartFile file,
+                           @RequestParam("email") String email) throws Exception {
+        User user = userService.findByEmail(email);
+        if(file == null){
+            return user;
+        }
+
+        File root = new File("./uploads");
+        if(root.exists() && user.getImg() != ""){ //파일존재여부
+            String temp = user.getImg();
+            String[] info = temp.split("/downloadFile/");
+            File[] files = root.listFiles();
+            for(File f : files){
+                if(f.getName().equals(info[1])){
+                    f.delete();
+                }
+            }
+        }
+
+        String fileName = fileUploadDownloadService.storeFile(file);
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(fileName)
+                .toUriString();
+        user.setImg(fileDownloadUri);
+        userService.save(user);
+        return user;
+    }
+    @DeleteMapping("/user/auth/deletefile")
+    public void deleteFile(@RequestParam("email") String email) throws Exception {
+        userService.deleteImg(email);
+    }
+
+    private ResponseEntity<Map<String, Object>> response(Object data, HttpStatus httpstatus, boolean status) {
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("status", status);
+        resultMap.put("data", data);
+        System.out.println("data : " + data + ", status  : " + status + ", : httpstatus: " + httpstatus);
+        return new ResponseEntity<Map<String, Object>>(resultMap, httpstatus);
     }
 }
