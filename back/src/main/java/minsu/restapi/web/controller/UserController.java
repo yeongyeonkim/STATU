@@ -146,6 +146,8 @@ public class UserController {
 
     @PutMapping("/user/auth/modify")
     public Map<String, String> modify(@RequestBody UserDto userDto) throws Exception {
+//  public Map<String, String> modify(@RequestBody UserDto userDto, HttpServletRequest req) throws Exception{
+        //jwtService.checkValid(req.getHeader("token");
         User user = convertToEntity(userDto);
         userService.modify(user);
         Map<String, String> map = new HashMap<>();
