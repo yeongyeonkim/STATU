@@ -201,12 +201,14 @@ public class UserController {
         User user = modelMapper.map(userDto, User.class);
 
         String temp="";
+        if(userDto.getCategory1()!=null)
         for(int i=0; i<userDto.getCategory1().length; i++){
             temp+=userDto.getCategory1()[i]+",";
         }
         user.setCategory1(temp);
 
         temp="";
+        if(userDto.getCategory2()!=null)
         for(int i=0; i<userDto.getCategory2().length; i++){
             temp+=userDto.getCategory2()[i]+",";
         }

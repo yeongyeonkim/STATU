@@ -135,12 +135,15 @@ public class CalendarController {
 
         //set
         String temp="";
+        if(calendarDto.getTags()!=null)
         for(int i=0; i<calendarDto.getTags().length; i++){temp+=calendarDto.getTags()[i]+",";}
         calendar.setTag(temp);
        temp="";
+        if(calendarDto.getCategory1()!=null)
         for(int i=0; i<calendarDto.getCategory1().length; i++){temp+=calendarDto.getCategory1()[i]+",";}
         calendar.setCategory1(temp);
         temp="";
+        if(calendarDto.getCategory2()!=null)
         for(int i=0; i<calendarDto.getCategory2().length; i++){temp+=calendarDto.getCategory2()[i]+",";}
         calendar.setCategory2(temp);
         return calendar;
