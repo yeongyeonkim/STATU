@@ -47,7 +47,7 @@ public class TodoController {
         return list;
     }
 
-    @DeleteMapping("/todo")
+    @DeleteMapping("/todo/{todoId}")
     public Map<String, String> deleteById(@PathVariable Long todoId){
         Map<String, String> map = new HashMap<>();
         todoService.deleteById(todoId);

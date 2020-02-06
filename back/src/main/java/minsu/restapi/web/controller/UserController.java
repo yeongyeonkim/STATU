@@ -150,7 +150,7 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/user")
+    @DeleteMapping("/user/{email}")
     public Map<String, String> deleteUser(@PathVariable String email) {
         Map<String, String> map = new HashMap<>();
         userService.deleteByEmail(email);

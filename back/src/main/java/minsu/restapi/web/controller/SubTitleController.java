@@ -76,7 +76,7 @@ public class SubTitleController {
         return map;
     }
 
-    @DeleteMapping("/subtitle")
+    @DeleteMapping("/subtitle/{subTitleId}")
     public Map<String,String> deleteById(@PathVariable Long subTitleId){
         subTitleService.deleteById(subTitleId);
 
