@@ -22,4 +22,22 @@ public interface CalendarRepository extends JpaRepository<Calendar, Long> {
     @Modifying
     @Query("update Calendar c set c.represent = false where c.represent = true and c.user.id = :userId")
     public void updateRepresent(@Param("userId") Long userId);
+
+
+    @Query("select c from Calendar c where c.title like :search order by :sort")
+    public List<Calendar> fByTitle(@Param("search") String search, @Param("sort") String sort);
+
+    @Query("select c from Calendar c where c.category1 like :search order by :sort")
+    public List<Calendar> fByCategory1(@Param("search") String search, @Param("sort") String sort);
+
+    @Query("select c from Calendar c where c.category2 like :search order by :sort")
+    public List<Calendar> fByCategory2(@Param("search") String search, @Param("sort") String sort);
+
+    @Query("select c from Calendar c where c.tag like :search order by :sort")
+    public List<Calendar> fByTag(@Param("search") String search, @Param("sort") String sort);
+
+    @Query("select c from Calendar c where c.title like :search " +
+            "or c.tag like :search or c.category1 like :search or c.category2 like :search order by :sort")
+    public List<Calendar> findByAllOp(@Param("search") String search, @Param("sort") String sort);
+
 }

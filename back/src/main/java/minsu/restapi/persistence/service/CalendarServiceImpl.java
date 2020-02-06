@@ -53,6 +53,41 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
+    public List<Calendar> findByTitle(String search, String sort) {
+        List<Calendar> list = null;
+        list = calendarRepository.fByTitle("%"+search+"%",sort);
+        return list;
+    }
+
+    @Override
+    public List<Calendar> findByTag(String search, String sort) {
+        List<Calendar> list = null;
+        list = calendarRepository.fByTag("%"+search+"%",sort);
+        return list;
+    }
+
+    @Override
+    public List<Calendar> findByCategory1(String search, String sort) {
+        List<Calendar> list = null;
+        list = calendarRepository.fByCategory1("%"+search+"%",sort);
+        return list;
+    }
+
+    @Override
+    public List<Calendar> findByCategory2(String search, String sort) {
+        List<Calendar> list = null;
+        list = calendarRepository.fByCategory2("%"+search+"%",sort);
+        return list;
+    }
+
+    @Override
+    public List<Calendar> findByTagCC(String search, String sort) {
+        List<Calendar> list = null;
+        list = calendarRepository.findByAllOp("%"+search+"%",sort);
+        return list;
+    }
+
+    @Override
     public List<Calendar> findAll() {
         return calendarRepository.findAll();
     }

@@ -1,5 +1,6 @@
 package minsu.restapi.persistence.service;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import lombok.Builder;
 import minsu.restapi.persistence.dao.UserRepository;
 import minsu.restapi.persistence.model.User;
@@ -8,6 +9,7 @@ import minsu.restapi.spring.TempKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,6 +24,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private JavaMailSender mailSender;
+
 
     public int save(User user) { //가입이 잘 되었으면 i = 1;
 
@@ -39,20 +42,16 @@ public class UserServiceImpl implements UserService {
     public User signin(String email, String password) {
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-
         User user = userRepository.fe(email);
         if (user != null) {
             if (passwordEncoder.matches(password, user.getPassword())) {
-                System.out.println(password);
-                System.out.println(user.getPassword());
-
+            //if(password.equals(user.getPassword())){
                 return user;
             }
-        } else {
+            }else {
             throw new RuntimeException("아이디 또는 비밀번호가 틀립니다.");
         }
-        return null;
+        return user;
     }
 
     @Override
@@ -91,6 +90,10 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    public User findByName(String name){
+        User user = userRepository.findByName(name);
+        return user;
+    }
 
     @Transactional
     public void sendEmail(User user) throws Exception {

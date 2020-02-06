@@ -44,7 +44,7 @@ public class User {
     private String authKey;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     private Role role;
 
     //사용자 상태
