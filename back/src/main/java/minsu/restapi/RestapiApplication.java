@@ -26,9 +26,11 @@ public class RestapiApplication implements WebMvcConfigurer {
     private JwtInterceptor jwtInterceptor;
 
     public void addInterceptors(InterceptorRegistry registry) {
-
+        System.out.println("여기는오는데");
         registry.addInterceptor(jwtInterceptor)
-                .excludePathPatterns(Arrays.asList("/**")).addPathPatterns("/user/auth/**");
+                .addPathPatterns("/user/auth/**", "/todo/auth/**", "/subtitle/auth/**"
+                                ,"/category1/auth/**", "/category2/auth/**", "/calendar/auth/**");
+//                .excludePathPatterns(Arrays.asList("/**")).
 //        .excludePathPatterns("/user", "/user/signin", "/user/signup");
         //  이런식으로 토큰이 필요 없는 부분 제외.a
     }
@@ -39,6 +41,6 @@ public class RestapiApplication implements WebMvcConfigurer {
                 .allowedOrigins("*")
                 .allowedMethods("*")
                 .allowedHeaders("*")
-                .exposedHeaders("jwt-auth-token");
+                .exposedHeaders("token");
     }
 }

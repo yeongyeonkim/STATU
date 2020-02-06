@@ -51,7 +51,8 @@ public class UserController {
 
     @GetMapping("/user")
     public List<User> findAll() {
-        return userService.findAll();
+        return
+                userService.findAll();
     }
 
     @GetMapping("/user/{id}")
@@ -61,7 +62,6 @@ public class UserController {
 
     @GetMapping("/user/checkmail/{usermail}")
     public Map<String, String> checkmail(@PathVariable String usermail) {
-
         Map<String, String> map = new HashMap<>();
         if (userService.checkEmail(usermail)) {
             map.put("result", "true");
@@ -82,14 +82,6 @@ public class UserController {
         return map;
     }
 
-    //소셜로그인
-//    @GetMapping("/user/social")
-//    @ApiOperation("소셜로그인 인증 후 리다이렉트되는 부분")
-//    public Map<String, Object> social(@LoginUser SessionUser user){
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("user", user);
-//        return map;
-//    }
     @GetMapping("/user/social")
     @ApiOperation("소셜로그인 인증 후 리다이렉트되는 부분")
     public ResponseEntity<Map<String, Object>> social(@LoginUser SessionUser user){
@@ -107,11 +99,10 @@ public class UserController {
         }
     }
 
-//    @GetMapping("/user/loginfailure")
-//    @ApiOperation("로그인 실패시")
-//    public String loginfailure(@LoginUser SessionUser user){
-//
-//    }
+    @GetMapping("/user/auth/exp")
+    public boolean checkExpiration(HttpServletRequest req){
+        return jwtService.getExpToken(req.getHeader("token"));
+    }
 
     //로그인
     @PostMapping("/user/signin")
@@ -123,7 +114,7 @@ public class UserController {
             User reqUser = userService.signin(loginDto.getEmail(), loginDto.getPassword());
             if (reqUser != null) {
                 String token = jwtService.create(reqUser); // token은 String으로.
-                res.setHeader("jwt-auth-token", token);
+                res.setHeader("token", token);
 //                if(jwtService.getExpToken(res.getHeader("jwt_auth-token"))); // true면 만료?
                 resultMap.put("token", token);
                 return response(resultMap, HttpStatus.ACCEPTED, true);
@@ -161,15 +152,9 @@ public class UserController {
         }
     }
 
-
-    @PutMapping("/user/auth")
+    @PutMapping("/user/auth/modify")
     public Map<String, String> modify(@RequestBody UserDto userDto, HttpServletRequest req) throws Exception {
-//        String jwt = req.getParamter("jwt");
-//        String token = req.getHeader("token");
-//        System.out.println(token);
-//        System.out.println(req.getParameter("jwt-auth-token"));
-//        System.out.println(req.getParameter("token"));
-//        if(jwtService.checkValid(token)) 면 세이브 하는식으로?
+        jwtService.checkValid(req.getHeader("token"));
         User user = convertToEntity(userDto);
         userService.save(user);
         Map<String, String> map = new HashMap<>();
@@ -177,11 +162,10 @@ public class UserController {
         return map;
     }
 
-
-    @DeleteMapping("/user/auth/{email}")
-    public Map<String, String> deleteUser(@PathVariable String email, HttpServletRequest req) {
+    @DeleteMapping("/user/auth/delete")
+    public Map<String, String> deleteUser(HttpServletRequest req) throws Exception {
+        userService.deleteByEmail(jwtService.getUserEmail(req.getHeader("token")));
         Map<String, String> map = new HashMap<>();
-        userService.deleteByEmail(email);
         map.put("result", "success");
         return map;
     }
@@ -190,7 +174,6 @@ public class UserController {
 
         User user = modelMapper.map(userDto, User.class);
 
-        //set
         if (userDto.getCategory1() != null) {
             for (int i = 0; i < userDto.getCategory1().length; i++) {
                 Category1 category1 = new Category1();
@@ -210,14 +193,6 @@ public class UserController {
         return user;
     }
 
-    private ResponseEntity<Map<String, Object>> response(Object data, HttpStatus httpstatus, boolean status) {
-        Map<String, Object> resultMap = new HashMap<>();
-        System.out.println("status : " + status);
-        resultMap.put("status", status);
-        resultMap.put("data", data);
-        return new ResponseEntity<Map<String, Object>>(resultMap, httpstatus);
-    }
-
     @GetMapping(value="/joinConfirm/{id}/{auth}")
     public String  emailConfirm(@PathVariable Long id,@PathVariable String auth,HttpServletResponse response) throws Exception {
         User user = userService.findById(id);
@@ -233,7 +208,8 @@ public class UserController {
 
     @PostMapping("/user/auth/upload")
     public User uploadFile(@RequestParam(value = "file", required = false) MultipartFile file,
-                           @RequestParam("email") String email) {
+                           @RequestParam("email") String email, HttpServletRequest req) throws Exception {
+        jwtService.checkValid(req.getHeader("token"));
         User user = userService.findByEmail(email);
         if(file == null){
             return user;
@@ -264,9 +240,16 @@ public class UserController {
         return user;
     }
     @DeleteMapping("/user/auth/deletefile")
-    public void deleteFile(@RequestParam("email") String email){
+    public void deleteFile(@RequestParam("email") String email, HttpServletRequest req) throws Exception {
+        jwtService.checkValid(req.getHeader("token"));
         userService.deleteImg(email);
     }
 
-
+    private ResponseEntity<Map<String, Object>> response(Object data, HttpStatus httpstatus, boolean status) {
+        Map<String, Object> resultMap = new HashMap<>();
+        System.out.println("status : " + status);
+        resultMap.put("status", status);
+        resultMap.put("data", data);
+        return new ResponseEntity<Map<String, Object>>(resultMap, httpstatus);
+    }
 }
