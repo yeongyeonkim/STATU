@@ -56,7 +56,8 @@ public class Calendar {
     private String category1;
     @Column(name ="category2")
     private String category2;
-    @OneToMany(mappedBy="calendar")
+
+    @OneToMany(mappedBy="calendar", fetch = FetchType.LAZY)
     private List<SubTitle> subTitles = new ArrayList<>();
 
 }

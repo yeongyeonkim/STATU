@@ -50,7 +50,7 @@ public class User {
     private String statusCode;
 
 
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user",fetch = FetchType.LAZY)
     private List<Calendar> calendars = new ArrayList<>();
 
 }

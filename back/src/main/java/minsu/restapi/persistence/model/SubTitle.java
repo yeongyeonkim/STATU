@@ -38,7 +38,7 @@ public class SubTitle {
     @JoinColumn(name = "calendar_id")
     private Calendar calendar;
 
-    @OneToMany(mappedBy="subTitle")
+    @OneToMany(mappedBy="subTitle", fetch = FetchType.LAZY)
     private List<Todo> todo = new ArrayList<>();
 
 }
