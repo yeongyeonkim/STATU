@@ -45,6 +45,7 @@ public class JwtService {
 		final String jwt = builder.compact();
 		System.out.println(getUserEmail(jwt));
 		//log.debug("토큰발행 : {}", jwt);
+
 		return jwt;
 	}
 

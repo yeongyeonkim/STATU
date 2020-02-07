@@ -5,6 +5,7 @@ import minsu.restapi.persistence.model.*;
 import minsu.restapi.persistence.service.FileUploadDownloadService;
 import minsu.restapi.persistence.service.JwtService;
 import minsu.restapi.persistence.service.UserService;
+import minsu.restapi.spring.LoginUser;
 import minsu.restapi.web.dto.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,7 @@ public class UserController {
         HttpStatus status = null;
         try {
             User reqUser = userService.signin(loginDto.getEmail(), loginDto.getPassword());
+            System.out.println(reqUser);
             if (reqUser != null) {
                 String token = jwtService.create(reqUser);
                 res.setHeader("token", token);
@@ -156,6 +158,27 @@ public class UserController {
 
     }
 
+    @GetMapping("/user/social")
+    @ApiOperation("소셜로그인 인증 후 리다이렉트되는 부분")
+    public ResponseEntity<Map<String, Object>> social(@LoginUser SessionUser user){
+        Map<String, Object> map = new HashMap<>();
+        try{
+            if(user != null){
+                map.put("user", user);
+                return response(map, HttpStatus.ACCEPTED, true);
+            } else{
+                map.put("message", "아이디 혹은 비밀번호가 틀렸습니다. 다시 시도해주세요");
+                return response(map, HttpStatus.ACCEPTED, false);
+            }
+        } catch (Exception e){
+            return response(e.getMessage(), HttpStatus.CONFLICT, false);
+        }
+    }
+
+    @GetMapping("/user/auth/exp")
+    public boolean checkExpiration(HttpServletRequest req){
+        return jwtService.getExpToken(req.getHeader("token"));
+    }
 
     @DeleteMapping("/user/auth")
     public Map<String, String> deleteUser(HttpServletRequest req) {
@@ -253,6 +276,7 @@ public class UserController {
     public void deleteFile(@RequestParam("email") String email) throws Exception {
         userService.deleteImg(email);
     }
+
 
     private ResponseEntity<Map<String, Object>> response(Object data, HttpStatus httpstatus, boolean status) {
         Map<String, Object> resultMap = new HashMap<>();

@@ -15,11 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     public void deleteByEmail(String email);
 
-    //이메일로 권한찾기.
-    @Query("select s.role from User s where s.email = :email")
-    String fr(@Param("email") String email);
-    //이메일로 User 찾기
-
     @Query("select s from User s where s.email = :email")
     User fe(@Param("email") String email);
 

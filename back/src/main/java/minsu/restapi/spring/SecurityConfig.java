@@ -35,9 +35,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //로그아웃 성공시 url
                 .and()
                     .oauth2Login()
-                        .defaultSuccessUrl("/redirect")
-//                        .defaultSuccessUrl("/user/social") //이걸로 바꿀 예정 RestApi
-                            .failureUrl("/loginfailure") // 실패시
+//                        .defaultSuccessUrl("/redirect")
+                        .defaultSuccessUrl("/user/social") //이걸로 바꿀 예정 RestApi
+//                            .failureUrl("/loginfailure") // 실패시
                                 .userInfoEndpoint()
                                     .userService(customOAuth2UserService);
     }
