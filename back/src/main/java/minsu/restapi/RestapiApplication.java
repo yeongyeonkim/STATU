@@ -26,7 +26,9 @@ public class RestapiApplication implements WebMvcConfigurer {
     private JwtInterceptor jwtInterceptor;
 
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(jwtInterceptor).addPathPatterns("/user/auth/**", "/todo/auth/**", "/subtitle/auth/**"
+//        registry.addInterceptor(jwtInterceptor).addPathPatterns("/user/auth/**", "/todo/auth/**", "/subtitle/auth/**"
+//                ,"/category1/auth/**", "/category2/auth/**", "/calendar/auth/**");
+        registry.addInterceptor(jwtInterceptor).addPathPatterns("/todo/auth/**", "/subtitle/auth/**"
                 ,"/category1/auth/**", "/category2/auth/**", "/calendar/auth/**");
 
         // 나중에 토큰 체크할 부분

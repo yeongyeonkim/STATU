@@ -3,6 +3,7 @@ package minsu.restapi.spring;
 import lombok.RequiredArgsConstructor;
 import minsu.restapi.persistence.model.Role;
 import minsu.restapi.persistence.service.CustomOAuth2UserService;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,11 +11,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 import java.util.Arrays;
 
+@Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -41,4 +44,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 .userInfoEndpoint()
                                     .userService(customOAuth2UserService);
     }
+
 }

@@ -14,6 +14,16 @@ public interface CalendarService {
 
     public Calendar findById(Long id);
 
+    public List<Calendar> findByTitle(String title, String sort);
+
+    public List<Calendar> findByTag(String search, String sort);
+
+    public List<Calendar> findByCategory1(String search, String sort);
+
+    public List<Calendar> findByCategory2(String search, String sort);
+
+    public List<Calendar> findByTagCC(String search, String sort);
+
     public List<Calendar> findAll();
 
     public List<Calendar> findByUserId(Long id);

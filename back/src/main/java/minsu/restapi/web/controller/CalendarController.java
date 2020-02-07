@@ -1,5 +1,6 @@
 package minsu.restapi.web.controller;
 
+import io.swagger.annotations.ApiOperation;
 import minsu.restapi.persistence.model.*;
 import minsu.restapi.persistence.service.SubTitleService;
 import minsu.restapi.web.dto.CalendarResponseDto;
@@ -9,6 +10,7 @@ import minsu.restapi.persistence.service.CategoryService;
 import minsu.restapi.persistence.service.UserService;
 import minsu.restapi.web.dto.CalendarDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -93,6 +95,32 @@ public class CalendarController {
     public List<CalendarResponseDto> findByUserId(@PathVariable Long userid){
         List<Calendar> temp = calendarService.findByUserId(userid);
         List<CalendarResponseDto> list = new ArrayList<>();
+        for(int i=0; i<temp.size(); i++){
+            list.add(convertToResponseDto(temp.get(i)));
+        }
+        return list;
+    }
+
+    @GetMapping("/calendar/{option}/{sort}/{search}")
+    @ApiOperation("title,tag,category1,categort2,all/id,title,view,recommend/string")
+    public List<CalendarResponseDto> findByUserId(@PathVariable String option,@PathVariable String sort, @PathVariable String search){
+        List<Calendar> temp = null;
+
+        if(!(sort.equals("id") || sort.equals("title") ||sort.equals("view") ||sort.equals("recommend")))sort="id";
+
+        if(option.equals("all")){
+            temp = calendarService.findByTagCC(search,sort);
+        }else if(option.equals("title")){
+            temp = calendarService.findByTitle(search,sort);
+        }else if(option.equals("tag")){
+            temp = calendarService.findByTag(search,sort);
+        }else if(option.equals("category1")){
+            temp = calendarService.findByCategory1(search,sort);
+        }else if(option.equals("category2")){
+            temp = calendarService.findByCategory2(search,sort);
+        }
+        List<CalendarResponseDto> list = new ArrayList<>();
+        if(temp!=null)
         for(int i=0; i<temp.size(); i++){
             list.add(convertToResponseDto(temp.get(i)));
         }

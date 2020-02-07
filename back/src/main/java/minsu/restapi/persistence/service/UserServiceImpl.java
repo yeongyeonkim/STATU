@@ -22,6 +22,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private JavaMailSender mailSender;
 
+
     public int save(User user) { //가입이 잘 되었으면 i = 1;
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -38,23 +39,25 @@ public class UserServiceImpl implements UserService {
     public User signin(String email, String password) {
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
         User user = userRepository.fe(email);
 
         if (user != null) {
             if (passwordEncoder.matches(password, user.getPassword())) {
                 System.out.println(password);
                 System.out.println(user.getPassword());
+                //if(password.equals(user.getPassword())){
                 return user;
             }
         } else {
             throw new RuntimeException("아이디 또는 비밀번호가 틀립니다.");
         }
-        return null;
+        return user;
     }
 
     @Override
-    public User findByEmail(String email){return userRepository.fe(email);}
+    public User findByEmail(String email) {
+        return userRepository.fe(email);
+    }
 
 
     public void modify(User user) {
@@ -68,27 +71,31 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public boolean checkEmail(String email){
+    public boolean checkEmail(String email) {
         boolean result = userRepository.existsByEmail(email);
         return result;
     }
 
-    public boolean checkName(String name){
+    public boolean checkName(String name) {
         boolean result = userRepository.existsByName(name);
         return result;
 
     }
 
-    public List<User> findAll(){
-        List<User> users =userRepository.findAll();
+    public List<User> findAll() {
+        List<User> users = userRepository.findAll();
         return users;
     }
 
-    public User findById(Long id){
+    public User findById(Long id) {
         User user = userRepository.findById(id).get();
         return user;
     }
 
+    public User findByName(String name) {
+        User user = userRepository.findByName(name);
+        return user;
+    }
 
     @Transactional
     public void sendEmail(User user) throws Exception {
@@ -102,7 +109,7 @@ public class UserServiceImpl implements UserService {
         // mail 작성 관련
         MailUtils sendMail = new MailUtils(mailSender);
 
-        sendMail.setSubject("[Hoon's Board v2.0] 회원가입 이메일 인증");
+        sendMail.setSubject("[ssafy's Board v2.0] 회원가입 이메일 인증");
         sendMail.setText(new StringBuffer().append("<h1>[이메일 인증]</h1>")
                 .append("<p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>")
                 .append("<a href='http://13.124.208.26:8080/joinConfirm")
@@ -118,7 +125,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteImg(String email){
+    public void deleteImg(String email) {
         User user = userRepository.fe(email);
         user.setImg("default.png");
     }
