@@ -37,21 +37,13 @@ public class UserServiceImpl implements UserService {
     }
 
     public User signin(String email, String password) {
-
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user = userRepository.fe(email);
-
         if (user != null) {
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                System.out.println(password);
-                System.out.println(user.getPassword());
-                //if(password.equals(user.getPassword())){
-                return user;
-            }
-        } else {
-            throw new RuntimeException("아이디 또는 비밀번호가 틀립니다.");
+            if (passwordEncoder.matches(password, user.getPassword())) return user;
+            else throw new RuntimeException("아이디 또는 비밀번호가 틀립니다.");
         }
-        return user;
+        return null;
     }
 
     @Override
@@ -109,7 +101,7 @@ public class UserServiceImpl implements UserService {
         // mail 작성 관련
         MailUtils sendMail = new MailUtils(mailSender);
 
-        sendMail.setSubject("[ssafy's Board v2.0] 회원가입 이메일 인증");
+        sendMail.setSubject("STATU 회원가입 이메일 인증");
         sendMail.setText(new StringBuffer().append("<h1>[이메일 인증]</h1>")
                 .append("<p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>")
                 .append("<a href='http://13.124.208.26:8080/joinConfirm")

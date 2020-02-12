@@ -38,9 +38,11 @@ public class RestapiApplication implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("*")
+                //.allowedMethods("GET", "POST", "OPTIONS", "PUT")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .exposedHeaders("token");
+        //.exposedHeaders("Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
     }
 
 }

@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -25,6 +26,7 @@ import java.util.*;
 @CrossOrigin(origins = {"*"}, maxAge = 6000)
 @RestController
 public class UserController {
+
 
     @Autowired
     private JwtService jwtService;
@@ -50,6 +52,7 @@ public class UserController {
   public boolean checkExp(HttpServletRequest req){
       return jwtService.getExpToken(req.getHeader("token"));
   }
+
     @PostMapping("/user/signup")
     @ApiOperation("가입하기")
     public ResponseEntity<Map<String, Object>> postSignUp(@RequestBody UserDto userDto) throws Exception {
@@ -120,6 +123,7 @@ public class UserController {
             return response(e.getMessage(), HttpStatus.CONFLICT, false);
         }
     }
+
     @GetMapping("/user/auth/exp")
     public boolean checkExpiration(HttpServletRequest req){
         return jwtService.getExpToken(req.getHeader("token"));
@@ -182,15 +186,13 @@ public class UserController {
 
 
     @PutMapping("/user/auth/modify")
-    public Map<String, String> modify(@RequestBody UserDto userDto) throws Exception {
-//  public Map<String, String> modify(@RequestBody UserDto userDto, HttpServletRequest req) throws Exception{
-        //jwtService.checkValid(req.getHeader("token");
+    public ResponseEntity<Map<String, Object>> modify(@RequestBody UserDto userDto) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
         User user = convertToEntity(userDto);
         userService.modify(user);
-        Map<String, String> map = new HashMap<>();
-        map.put("result", "success");
-        return map;
-
+        String token = jwtService.create(user);
+        resultMap.put("token",token);
+        return response(resultMap, HttpStatus.ACCEPTED, true);
     }
 
     @DeleteMapping("/user/auth/{email}")
