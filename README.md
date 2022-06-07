@@ -3,7 +3,7 @@
 2020-01 ~ 02</br>
 https://www.youtube.com/watch?v=DCc4ucNpZwc&feature=youtu.be
 
-
+```
 #back
 
 cd back
@@ -36,7 +36,7 @@ docker exec -it [container_ID] /bin/bash
 
 #이미지에 접근할 수 있도록 forward설정
 
-```bash
+bash
 server {
 	listen 80;
 	location / {
@@ -51,10 +51,10 @@ server {
 	#
 	include /etc/nginx/extra-conf.d/*.conf;
 }
-```
+
 
 이후 docker restart [Container_ID] 를통해 nginx를 재시작할수 있도록함.
-
+```
 
 
 
